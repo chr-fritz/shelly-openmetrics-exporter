@@ -7,6 +7,7 @@ import (
 type Metrics struct {
 	Power                 *prometheus.GaugeVec
 	PowerLimit            *prometheus.GaugeVec
+	ApparentPower         *prometheus.GaugeVec
 	Current               *prometheus.GaugeVec
 	CurrentLimit          *prometheus.GaugeVec
 	NeutralCurrent        *prometheus.GaugeVec
@@ -44,6 +45,7 @@ type Metrics struct {
 func NewMetrics(reg *prometheus.Registry) *Metrics {
 	deviceLabels := []string{"target"}
 	lineLabels := append(deviceLabels, "line")
+	namedLineLabels := append(deviceLabels, "line", "name")
 
 	m := &Metrics{
 		Power: prometheus.NewGaugeVec(
@@ -51,28 +53,35 @@ func NewMetrics(reg *prometheus.Registry) *Metrics {
 				Name: "shelly_power_w",
 				Help: "The power value in this instant.",
 			},
-			lineLabels,
+			namedLineLabels,
 		),
 		PowerLimit: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "shelly_power_limit_w",
 				Help: "The power limit value in this instant.",
 			},
-			lineLabels,
+			namedLineLabels,
+		),
+		ApparentPower: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "shelly_apparent_power",
+				Help: "Apparent power measurement value",
+			},
+			namedLineLabels,
 		),
 		Current: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "shelly_current_a",
 				Help: "The current value in this instant.",
 			},
-			lineLabels,
+			namedLineLabels,
 		),
 		CurrentLimit: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "shelly_current_limit_a",
 				Help: "The current limit value in this instant.",
 			},
-			lineLabels,
+			namedLineLabels,
 		),
 		NeutralCurrent: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
@@ -107,49 +116,49 @@ func NewMetrics(reg *prometheus.Registry) *Metrics {
 				Name: "shelly_voltage_v",
 				Help: "The voltage value in this instant.",
 			},
-			lineLabels,
+			namedLineLabels,
 		),
 		VoltageLimit: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "shelly_voltage_limit_v",
 				Help: "The voltage limit value in this instant.",
 			},
-			lineLabels,
+			namedLineLabels,
 		),
 		PowerFactor: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "shelly_pf",
 				Help: "The power factor in this instant.",
 			},
-			lineLabels,
+			namedLineLabels,
 		),
 		Total: prometheus.NewCounterVec(
 			prometheus.CounterOpts{
 				Name: "shelly_total_wh",
 				Help: "The total consumed energy up to this instant.",
 			},
-			lineLabels,
+			namedLineLabels,
 		),
 		TotalReturned: prometheus.NewCounterVec(
 			prometheus.CounterOpts{
 				Name: "shelly_total_returned_wh",
 				Help: "The total returned energy up to this instant.",
 			},
-			lineLabels,
+			namedLineLabels,
 		),
 		Frequency: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "shelly_grid_frequency",
 				Help: "Last measured network frequency.",
 			},
-			lineLabels,
+			namedLineLabels,
 		),
 		Temperature: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "shelly_temperature_k",
 				Help: "The current temperature in degrees of kelvin.",
 			},
-			lineLabels,
+			namedLineLabels,
 		),
 		RelativeHumidity: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
@@ -289,6 +298,7 @@ func NewMetrics(reg *prometheus.Registry) *Metrics {
 	reg.MustRegister(
 		m.Power,
 		m.PowerLimit,
+		m.ApparentPower,
 		m.Current,
 		m.CurrentLimit,
 		m.NeutralCurrent,

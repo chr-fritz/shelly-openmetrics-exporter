@@ -55,7 +55,7 @@ func (s *ShellyV2) fillSwitchMetrics(m *shelly.Metrics) {
 	}
 
 	for i, shellySwitch := range s.status.SwitchesStatus {
-		labels := shelly.LineLabels(s.Shelly, "switch", i)
+		labels := shelly.NamedLineLabels(s.Shelly, "switch", i, shelly.GetConfigValue(s.status.SwitchesConfig, i, getSwitchName))
 
 		m.Current.WithLabelValues(labels...).Set(shellySwitch.Current)
 		m.Power.WithLabelValues(labels...).Set(shellySwitch.Power)
@@ -64,13 +64,18 @@ func (s *ShellyV2) fillSwitchMetrics(m *shelly.Metrics) {
 		m.Voltage.WithLabelValues(labels...).Add(shellySwitch.Voltage)
 		m.Temperature.WithLabelValues(labels...).Add(shelly.CelsiusToKelvin(shellySwitch.Temperature.Celsius))
 	}
+
 	for i, shellySwitch := range s.status.SwitchesConfig {
-		labels := shelly.LineLabels(s.Shelly, "switch", i)
+		labels := shelly.NamedLineLabels(s.Shelly, "switch", i, shelly.GetConfigValue(s.status.SwitchesConfig, i, getSwitchName))
 
 		m.CurrentLimit.WithLabelValues(labels...).Set(shellySwitch.CurrentLimit)
 		m.PowerLimit.WithLabelValues(labels...).Set(shellySwitch.PowerLimit)
 		m.VoltageLimit.WithLabelValues(labels...).Add(shellySwitch.VoltageLimit)
 	}
+}
+
+func getSwitchName(response SwitchGetConfigResponse) string {
+	return response.Name
 }
 
 func (s *ShellyV2) getSwitchStatus(status *Status) error {

@@ -12,6 +12,7 @@ type ShellyGeneration int
 const ShellyGeneration1 ShellyGeneration = 1
 const ShellyGeneration2 ShellyGeneration = 2
 const ShellyGeneration3 ShellyGeneration = 3
+const ShellyGeneration4 ShellyGeneration = 4
 
 func DetectVersion(targetHost string) (ShellyGeneration, error) {
 	client := &http.Client{}

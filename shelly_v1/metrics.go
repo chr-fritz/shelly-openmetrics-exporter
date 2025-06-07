@@ -76,7 +76,7 @@ func (s *ShellyV1) readAdcs(m *shelly.Metrics) {
 	}
 
 	for i, adc := range s.status.ADCs {
-		labels := shelly.LineLabels(s.Shelly, "adc", i)
+		labels := shelly.NamedLineLabels(s.Shelly, "adc", i, "")
 		m.Current.WithLabelValues(labels...).Set(adc.Voltage)
 	}
 }
@@ -96,7 +96,7 @@ func (s *ShellyV1) readEmeters(m *shelly.Metrics) {
 	}
 
 	for i, emeter := range s.status.Emeters {
-		labels := shelly.LineLabels(s.Shelly, "emeter", i)
+		labels := shelly.NamedLineLabels(s.Shelly, "emeter", i, "")
 
 		m.Current.WithLabelValues(labels...).Set(emeter.Current)
 		m.Power.WithLabelValues(labels...).Set(emeter.Power)

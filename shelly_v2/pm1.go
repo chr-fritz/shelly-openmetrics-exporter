@@ -2,6 +2,10 @@ package shelly_v2
 
 import "github.com/cimnine/shelly-openmetrics-exporter/shelly"
 
+type PM1GetConfigRequest struct {
+	Id int `json:"id"`
+}
+
 type PM1GetStatusRequest struct {
 	Id int `json:"id"`
 }
@@ -15,6 +19,15 @@ type PM1GetStatusResponse struct {
 	ActiveEnergyReturn EnergyCounter `json:"ret_aenergy"`
 	Freq               float64       `json:"freq"`
 }
+type PM1GetConfigResponse struct {
+	Id      int    `json:"id"`
+	Name    string `json:"name"`
+	Reverse bool   `json:"reverse"`
+}
+
+func getPm1Name(response PM1GetConfigResponse) string {
+	return response.Name
+}
 
 func (s *ShellyV2) fillPM1Metrics(m *shelly.Metrics) {
 	if s.status.PM1Status == nil {
@@ -22,7 +35,7 @@ func (s *ShellyV2) fillPM1Metrics(m *shelly.Metrics) {
 	}
 
 	for i, measurement := range s.status.PM1Status {
-		labels := shelly.LineLabels(s.Shelly, "meter", i)
+		labels := shelly.NamedLineLabels(s.Shelly, "meter", i, shelly.GetConfigValue(s.status.PM1Config, i, getPm1Name))
 
 		m.Voltage.WithLabelValues(labels...).Add(measurement.Voltage)
 		m.Current.WithLabelValues(labels...).Add(measurement.Current)
@@ -54,6 +67,29 @@ func (s *ShellyV2) getPM1Status(status *Status) error {
 		}
 
 		status.PM1Status = append(status.PM1Status, res)
+	}
+	return nil
+}
+
+func (s *ShellyV2) getPM1Config(status *Status) error {
+	for i := 0; true; i++ {
+		res := PM1GetConfigResponse{}
+		request := JsonRpc2Request{
+			JsonRpcVersion: "2.0",
+			Src:            "shelly-openmetrics-exporter",
+			Method:         "PM1.GetConfig",
+			Params:         PM1GetConfigRequest{Id: i},
+		}
+
+		end, err := s.do(request, &res)
+		if end {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		status.PM1Config = append(status.PM1Config, res)
 	}
 	return nil
 }

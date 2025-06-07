@@ -65,6 +65,22 @@ func (s *ShellyV2) FetchStatus() error {
 	if err != nil {
 		return err
 	}
+	err = s.getPM1Config(status)
+	if err != nil {
+		return err
+	}
+	err = s.getEM1Status(status)
+	if err != nil {
+		return err
+	}
+	err = s.getEM1Config(status)
+	if err != nil {
+		return err
+	}
+	err = s.getEM1DataStatus(status)
+	if err != nil {
+		return err
+	}
 
 	s.status = status
 
