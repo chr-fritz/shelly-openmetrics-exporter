@@ -70,7 +70,7 @@ func (s *ShellyV2) fillCoverMetrics(m *shelly.Metrics) {
 	}
 
 	for i, cover := range s.status.CoversStatus {
-		labels := shelly.LineLabels(s.Shelly, "cover", i)
+		labels := shelly.NamedLineLabels(s.Shelly, "cover", i, shelly.GetConfigValue(s.status.CoversConfig, i, getCoverName))
 
 		m.Current.WithLabelValues(labels...).Set(cover.Current)
 		m.Power.WithLabelValues(labels...).Set(cover.ActivePower)
@@ -80,12 +80,16 @@ func (s *ShellyV2) fillCoverMetrics(m *shelly.Metrics) {
 		m.Temperature.WithLabelValues(labels...).Add(shelly.CelsiusToKelvin(cover.Temperature.Celsius))
 	}
 	for i, cover := range s.status.CoversConfig {
-		labels := shelly.LineLabels(s.Shelly, "cover", i)
+		labels := shelly.NamedLineLabels(s.Shelly, "cover", i, cover.Name)
 
 		m.CurrentLimit.WithLabelValues(labels...).Set(cover.CurrentLimit)
 		m.PowerLimit.WithLabelValues(labels...).Set(cover.PowerLimit)
 		m.VoltageLimit.WithLabelValues(labels...).Add(cover.VoltageLimit)
 	}
+}
+
+func getCoverName(response CoverGetConfigResponse) string {
+	return response.Name
 }
 
 func (s *ShellyV2) getCoverStatus(status *Status) error {

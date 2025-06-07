@@ -20,7 +20,7 @@ func (s *ShellyV2) fillTemperatureMetrics(m *shelly.Metrics) {
 	}
 
 	for i, temperature := range s.status.TemperatureStatus {
-		labels := shelly.LineLabels(s.Shelly, "temperature", i)
+		labels := shelly.NamedLineLabels(s.Shelly, "temperature", i, "")
 
 		m.Temperature.WithLabelValues(labels...).Add(shelly.CelsiusToKelvin(temperature.Celsius))
 	}

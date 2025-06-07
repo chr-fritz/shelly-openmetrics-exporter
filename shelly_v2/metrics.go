@@ -19,6 +19,10 @@ type Status struct {
 	CoversConfig      []CoverGetConfigResponse
 	CoversStatus      []CoverGetStatusResponse
 	PM1Status         []PM1GetStatusResponse
+	PM1Config         []PM1GetConfigResponse
+	EM1Status         []EM1GetStatusResponse
+	EM1Config         []EM1GetConfigResponse
+	EM1DataStatus     []EM1DataGetStatusResponse
 }
 
 func (s *ShellyV2) FillMetrics(m *shelly.Metrics) {
@@ -32,4 +36,6 @@ func (s *ShellyV2) FillMetrics(m *shelly.Metrics) {
 	s.fillDevicePowerMetrics(m)
 	s.fillCoverMetrics(m)
 	s.fillPM1Metrics(m)
+	s.fillEM1Metrics(m)
+	s.fillEM1DataMetrics(m)
 }
