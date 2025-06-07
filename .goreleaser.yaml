@@ -16,14 +16,9 @@ builds:
     goarch:
       - amd64
       - arm64
-      - arm
-      - riscv64
-    goarm:
-      - '6'
-      - '7'
 
 gomod:
-  proxy: true
+  proxy: false
 
 sboms:
   - artifacts: archive
@@ -40,8 +35,8 @@ dockers:
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
     image_templates:
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:amd64-{{ .Tag }}"
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:amd64-latest"
+      - "ghcr.io/chr-fritz/shelly-openmetrics-exporter:amd64-{{ .Tag }}"
+      - "ghcr.io/chr-fritz/shelly-openmetrics-exporter:amd64-latest"
   - goos: linux
     goarch: arm64
     use: buildx
@@ -53,62 +48,17 @@ dockers:
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
     image_templates:
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:arm64-{{ .Tag }}"
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:arm64-latest"
-  - goos: linux
-    goarch: arm
-    goarm: 6
-    use: buildx
-    build_flag_templates:
-      - "--pull"
-      - "--platform=linux/arm/v6"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-    image_templates:
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:armv6-{{ .Tag }}"
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:armv6-latest"
-  - goos: linux
-    goarch: arm
-    goarm: 7
-    use: buildx
-    build_flag_templates:
-      - "--pull"
-      - "--platform=linux/arm/v7"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-    image_templates:
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:armv7-{{ .Tag }}"
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:armv7-latest"
-  - goos: linux
-    goarch: riscv64
-    use: buildx
-    build_flag_templates:
-      - "--pull"
-      - "--platform=linux/riscv64"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title={{.ProjectName}}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-    image_templates:
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:riscv64-{{ .Tag }}"
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:riscv64-latest"
+      - "ghcr.io/chr-fritz/shelly-openmetrics-exporter:arm64-{{ .Tag }}"
+      - "ghcr.io/chr-fritz/shelly-openmetrics-exporter:arm64-latest"
 docker_manifests:
-  - name_template: "ghcr.io/cimnine/shelly-openmetrics-exporter:latest"
+  - name_template: "ghcr.io/chr-fritz/shelly-openmetrics-exporter:latest"
     image_templates:
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:amd64-latest"
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:arm64-latest"
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:armv6-latest"
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:armv7-latest"
-  - name_template: "ghcr.io/cimnine/shelly-openmetrics-exporter:{{ .Tag }}"
+      - "ghcr.io/chr-fritz/shelly-openmetrics-exporter:amd64-latest"
+      - "ghcr.io/chr-fritz/shelly-openmetrics-exporter:arm64-latest"
+  - name_template: "ghcr.io/chr-fritz/shelly-openmetrics-exporter:{{ .Tag }}"
     image_templates:
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:amd64-{{ .Tag }}"
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:arm64-{{ .Tag }}"
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:armv6-{{ .Tag }}"
-      - "ghcr.io/cimnine/shelly-openmetrics-exporter:armv7-{{ .Tag }}"
+      - "ghcr.io/chr-fritz/shelly-openmetrics-exporter:amd64-{{ .Tag }}"
+      - "ghcr.io/chr-fritz/shelly-openmetrics-exporter:arm64-{{ .Tag }}"
 
 archives:
   - formats:
