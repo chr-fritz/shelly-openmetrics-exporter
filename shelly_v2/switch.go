@@ -57,20 +57,40 @@ func (s *ShellyV2) fillSwitchMetrics(m *shelly.Metrics) {
 	for i, shellySwitch := range s.status.SwitchesStatus {
 		labels := shelly.NamedLineLabels(s.Shelly, "switch", i, shelly.GetConfigValue(s.status.SwitchesConfig, i, getSwitchName))
 
-		m.Current.WithLabelValues(labels...).Set(shellySwitch.Current)
-		m.Power.WithLabelValues(labels...).Set(shellySwitch.Power)
-		m.PowerFactor.WithLabelValues(labels...).Set(shellySwitch.PowerFactor)
-		m.Total.WithLabelValues(labels...).Add(shellySwitch.ActiveEnergy.Total)
-		m.Voltage.WithLabelValues(labels...).Add(shellySwitch.Voltage)
-		m.Temperature.WithLabelValues(labels...).Add(shelly.CelsiusToKelvin(shellySwitch.Temperature.Celsius))
+		m.Output.WithLabelValues(labels...).Set(boolToMetric(shellySwitch.Output))
+
+		if shellySwitch.Current != -1 {
+			m.Current.WithLabelValues(labels...).Set(shellySwitch.Current)
+		}
+		if shellySwitch.Power != -1 {
+			m.Power.WithLabelValues(labels...).Set(shellySwitch.Power)
+		}
+		if shellySwitch.PowerFactor != -1 {
+			m.PowerFactor.WithLabelValues(labels...).Set(shellySwitch.PowerFactor)
+		}
+		if shellySwitch.ActiveEnergy.Total != -1 {
+			m.Total.WithLabelValues(labels...).Add(shellySwitch.ActiveEnergy.Total)
+		}
+		if shellySwitch.Voltage != -1 {
+			m.Voltage.WithLabelValues(labels...).Add(shellySwitch.Voltage)
+		}
+		if shellySwitch.Temperature != nil {
+			m.Temperature.WithLabelValues(labels...).Add(shelly.CelsiusToKelvin(shellySwitch.Temperature.Celsius))
+		}
 	}
 
 	for i, shellySwitch := range s.status.SwitchesConfig {
 		labels := shelly.NamedLineLabels(s.Shelly, "switch", i, shelly.GetConfigValue(s.status.SwitchesConfig, i, getSwitchName))
 
-		m.CurrentLimit.WithLabelValues(labels...).Set(shellySwitch.CurrentLimit)
-		m.PowerLimit.WithLabelValues(labels...).Set(shellySwitch.PowerLimit)
-		m.VoltageLimit.WithLabelValues(labels...).Add(shellySwitch.VoltageLimit)
+		if shellySwitch.CurrentLimit != -1 {
+			m.CurrentLimit.WithLabelValues(labels...).Set(shellySwitch.CurrentLimit)
+		}
+		if shellySwitch.PowerLimit != -1 {
+			m.PowerLimit.WithLabelValues(labels...).Set(shellySwitch.PowerLimit)
+		}
+		if shellySwitch.VoltageLimit != -1 {
+			m.VoltageLimit.WithLabelValues(labels...).Add(shellySwitch.VoltageLimit)
+		}
 	}
 }
 
@@ -80,7 +100,15 @@ func getSwitchName(response SwitchGetConfigResponse) string {
 
 func (s *ShellyV2) getSwitchStatus(status *Status) error {
 	for i := 0; true; i++ {
-		res := SwitchGetStatusResponse{}
+		res := SwitchGetStatusResponse{
+			Power:       -1,
+			PowerFactor: -1,
+			Voltage:     -1,
+			Current:     -1,
+			ActiveEnergy: EnergyCounter{
+				Total: -1,
+			},
+		}
 		request := JsonRpc2Request{
 			JsonRpcVersion: "2.0",
 			Src:            "shelly-openmetrics-exporter",
@@ -103,7 +131,11 @@ func (s *ShellyV2) getSwitchStatus(status *Status) error {
 
 func (s *ShellyV2) getSwitchConfig(status *Status) error {
 	for i := 0; true; i++ {
-		res := SwitchGetConfigResponse{}
+		res := SwitchGetConfigResponse{
+			CurrentLimit: -1,
+			PowerLimit:   -1,
+			VoltageLimit: -1,
+		}
 		request := JsonRpc2Request{
 			JsonRpcVersion: "2.0",
 			Src:            "shelly-openmetrics-exporter",
