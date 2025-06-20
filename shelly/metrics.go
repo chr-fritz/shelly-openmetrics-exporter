@@ -5,6 +5,7 @@ import (
 )
 
 type Metrics struct {
+	Output                *prometheus.GaugeVec
 	Power                 *prometheus.GaugeVec
 	PowerLimit            *prometheus.GaugeVec
 	ApparentPower         *prometheus.GaugeVec
@@ -48,6 +49,13 @@ func NewMetrics(reg *prometheus.Registry) *Metrics {
 	namedLineLabels := append(deviceLabels, "line", "name")
 
 	m := &Metrics{
+		Output: prometheus.NewGaugeVec(
+			prometheus.GaugeOpts{
+				Name: "shelly_output",
+				Help: "The state of the output.",
+			},
+			namedLineLabels,
+		),
 		Power: prometheus.NewGaugeVec(
 			prometheus.GaugeOpts{
 				Name: "shelly_power_w",
@@ -296,6 +304,7 @@ func NewMetrics(reg *prometheus.Registry) *Metrics {
 	}
 
 	reg.MustRegister(
+		m.Output,
 		m.Power,
 		m.PowerLimit,
 		m.ApparentPower,
