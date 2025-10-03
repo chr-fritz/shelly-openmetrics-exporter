@@ -13,77 +13,13 @@ import (
 func (s *ShellyV2) FetchStatus() error {
 	status := &Status{}
 
-	err := s.getSwitchStatus(status)
-	if err != nil {
-		return err
-	}
-	err = s.getSwitchConfig(status)
-	if err != nil {
-		return err
-	}
-	err = s.getInputStatus(status)
-	if err != nil {
-		return err
-	}
-	err = s.getWifiStatus(status)
-	if err != nil {
-		return err
-	}
-	err = s.getCloudStatus(status)
-	if err != nil {
-		return err
-	}
-	err = s.getCloudConfig(status)
-	if err != nil {
-		return err
-	}
-	err = s.getVoltmeterStatus(status)
-	if err != nil {
-		return err
-	}
-	err = s.getTemperatureStatus(status)
-	if err != nil {
-		return err
-	}
-	err = s.getHumidityStatus(status)
-	if err != nil {
-		return err
-	}
-	err = s.getDevicePowerStatus(status)
-	if err != nil {
-		return err
-	}
-	err = s.getCoverStatus(status)
-	if err != nil {
-		return err
-	}
-	err = s.getCoverConfig(status)
-	if err != nil {
-		return err
-	}
-	err = s.getPM1Status(status)
-	if err != nil {
-		return err
-	}
-	err = s.getPM1Config(status)
-	if err != nil {
-		return err
-	}
-	err = s.getEM1Status(status)
-	if err != nil {
-		return err
-	}
-	err = s.getEM1Config(status)
-	if err != nil {
-		return err
-	}
-	err = s.getEM1DataStatus(status)
-	if err != nil {
-		return err
+	for _, fetcher := range s.fetchers {
+		if err := fetcher(status); err != nil {
+			return err
+		}
 	}
 
 	s.status = status
-
 	return nil
 }
 
